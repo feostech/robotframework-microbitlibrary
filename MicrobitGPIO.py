@@ -1,7 +1,7 @@
 import serial
 import uflash
 
-ANALOG_VAL_MAX = 1023
+ANALOG_VAL_MAX = 1024
 
 class MicrobitGPIO:
 
@@ -15,6 +15,8 @@ class MicrobitGPIO:
         uflash.flash()
 
     def write_analog(self, pin, val):
+        pin = int(pin)
+        val = int(val)
         try:
             if val not in range(ANALOG_VAL_MAX):
                 raise ValueError
