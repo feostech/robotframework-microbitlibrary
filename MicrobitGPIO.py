@@ -6,6 +6,8 @@ DIGITAL_VAL_MAX = 2
 
 class MicrobitGPIO:
 
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+
     def __init__(self):
         self.pin = ["pin0", "pin1", "pin2"]
 
@@ -45,11 +47,16 @@ class MicrobitGPIO:
         pin = int(pin)
         period = int(period)
         try:
-            if period < 150 or period > 25000:
-                raise ValueError("Invalid period value: should be between 150us to 25ms")
             cmd = self.pin[pin] + ".set_analog_period(" + str(period) + ")\r\n"
             self.ser.write(cmd.encode("utf-8"))
         except IndexError as err:
             print("Invalid Pin number: should be 0, 1, or 2:", err)
         except ValueError as err:
             print(err)
+    
+    def disconnect(self):
+        if self.ser:
+            self.ser.close()
+            print("Serial connection closed.")
+        else:
+            print("Serial connection is not open.")
