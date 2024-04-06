@@ -2,8 +2,11 @@ import serial
 import uflash
 
 ANALOG_VAL_MAX = 1024
+DIGITAL_VAL_MAX = 2
 
 class MicrobitGPIO:
+
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
 
     def __init__(self):
         self.pin = ["pin0", "pin1", "pin2"]
@@ -26,3 +29,34 @@ class MicrobitGPIO:
             print("Invalid Pin number: should be 0,1,2: ", err)
         except ValueError as err:
             print("Invalid Analog value: should be in range 0 to 1023: ", err)
+    
+    def write_digital(self, pin, val):
+        pin = int(pin)
+        val = int(val)
+        try:
+            if val not in range(DIGITAL_VAL_MAX):
+                raise ValueError
+            cmd = self.pin[pin] + ".write_digital(" + str(val) +")\r\n"
+            self.ser.write(cmd.encode("utf-8"))
+        except IndexError as err:
+            print("Invalid Pin number: should be 0,1,2: ", err)
+        except ValueError as err:
+            print("Invalid Digital value: should be either 0 or 1: ", err)
+
+    def set_analog_period(self, pin, period):
+        pin = int(pin)
+        period = int(period)
+        try:
+            cmd = self.pin[pin] + ".set_analog_period(" + str(period) + ")\r\n"
+            self.ser.write(cmd.encode("utf-8"))
+        except IndexError as err:
+            print("Invalid Pin number: should be 0, 1, or 2:", err)
+        except ValueError as err:
+            print(err)
+    
+    def disconnect(self):
+        if self.ser:
+            self.ser.close()
+            print("Serial connection closed.")
+        else:
+            print("Serial connection is not open.")
